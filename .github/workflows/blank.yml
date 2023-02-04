@@ -1,112 +1,36 @@
-#!/usr/bin/env bash
+# This is a basic workflow to help you get started with Actions
 
-# Copyright 2020 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+name: CI
 
-#BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
-function token { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
 
-function show_help(){
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
 
-cat <<EOT
-Apigee Hybrid Deploy Proxy utility
-
-
-set -e
-
-
-# variables:
-# ORG ENV
-
-pps=""
-
-# options
-while(($#)); do
-case "$1" in
-  -o|--org)
-    ORG="$2"
-
-    shift 2;;
-
-  -e|--env)
-    ENV="$2"
-
-    shift 2;;
-
-  *)
-    pps="$pps $1"
-    shift;;
-esac
-done
-eval set -- "$pps"
-
-export API="$1"
-export API_BUNDLE="$2"
-
-requiredvarsareset=Y
-
-    if [ -z "$ORG" ]; then
-       printf "ERROR";
-       requiredvarsareset=N;
-    fi
-
-    if [ -z "$ENV" ]; then
-       printf "ERRORption";
-       requiredvarsareset=N;
-    fi
-    if [ -z "$API" ]; then
-       printf "ERROR";
-       requiredvarsareset=N;
-    fi
-    if [ -z "$API_BUNDLE" ]; then
-       printf "ERROR";
-       requiredvarsareset=N;
-    fi
-
-if [ "$requiredvarsareset" = "N" ]; then
-    echo "";
-    show_help;
-    exit 1
-fi
-
-
-# import
-
-export REV=$(curl --silent -H "Authorization: Bearer $(token)" -F file=@$API_BUNDLE -X POST "https://apigee.googleapis.com/v1/organizations/$ORG/apis?action=import&name=$API" | jq -r '.revision')
-
-# deploy
-echo "Deploying  Proxy: $API Revision: $REV to org: $ORG env: $ENV"
-curl --fail -H "Authorization: Bearer $(token)" -X POST "https://apigee.googleapis.com/v1/organizations/$ORG/environments/$ENV/apis/$API/revisions/$REV/deployments?override=true"
-
-
-# wait till ready
-echo -n "Checking Deployment Status"
-STATUS=""
-while [ "$STATE" != "READY" ]; do
-    STATE=$(curl --silent -H "Authorization: Bearer $(token)" "https://apigee.googleapis.com/v1/organizations/$ORG/environments/$ENV/apis/$API/revisions/$REV/deployments" | jq -r '.state')
-    echo -n "."
-    sleep 5
-done
-echo -e "\nProxy $API is deployed.\n"
-
-API_BASEPATH=$(unzip -p $API_BUNDLE apiproxy/proxies/default.xml|awk 'BEGIN{FS="(>|<)"}/<BasePath>/{print $3; exit }')
-
-cat <<EOF
-Sample request:
-  curl --cacert \$RUNTIME_SSL_CERT https://\$RUNTIME_HOST_ALIAS$API_BASEPATH -v --resolve "\$RUNTIME_HOST_ALIAS:443:\$RUNTIME_IP" --http1.1
-EOF
-
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
