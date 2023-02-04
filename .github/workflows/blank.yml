@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
+#BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
 
 
 function token { echo -n "$(gcloud config config-helper --force-auth-refresh | grep access_token | grep -o -E '[^ ]+$')" ; }
