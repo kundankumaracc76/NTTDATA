@@ -26,12 +26,10 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Deploying Proxy on APIGEE
         run: |
           curl --fail -H "Authorization: Bearer ya29.a0AVvZVsrrCWMaQiy1nzlDgt_D5mqY7KpPUI2K-R-efvVyGqrNZwdA2tpLr4FlVxgfi6XtX5GPJeZQALO1xc2gfMOPbL1j04caniH84Zk7e46hTEWbJeNRB-799JEUptowAq6KxOokRW6Tc8sze50JvdsQIdKDt3X6NN6SwSceofDDy1_rdQFnV_ugtW--wtiqr1q5dgwRruGHCqHIBiMqaMN1TeWF7d3NzVQ0fQaCgYKAaMSARMSFQGbdwaIgg7F9bdl8g92YIYSxCIAJA0237" -X POST "https://apigee.googleapis.com/v1/organizations/apigee-nonprod-366819/environments/ecomm-middleware-dev/apis/testapi/revisions/1/deployments?override=true"
-
+      
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Status
+          echo "Proxy tespapi is deployed"
