@@ -25,18 +25,7 @@ function show_help(){
 cat <<EOT
 Apigee Hybrid Deploy Proxy utility
 
-Synopsis:
 
-   apigee-hybrid-deploy-proxy <api-name> <api-bundle-zip-file> [--org <org-name>] [--env <env-name>]
-   
-For options, either define environment varibles (uppercase) or use options notation (lowercase).
-If both are set, an option takes priority.
-
-Example
-   apigee-hybrid-deploy-proxy ping ping.zip
-
-EOT
-}
 set -e
 
 
