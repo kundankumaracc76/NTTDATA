@@ -19,18 +19,31 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+	#BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" 
+	#set -e
+	#token = ya29.a0AVvZVsoB7BGaU2SFyG5yqMzWdTNpEhTRefA7ddp2JtuxR-yFSS8CSby8LClW5b5gn1hDTRvVzQqJSiKhc52IV1M_D35I5cJ2Vl8pBCZQeJUS28mVQEAHOnti4y2f-dEr7-omBu5cSz_PVtudUUUsCnOvTB4Iq-qP6HNyDvRhO64UI0lIdgNaeIqs8PSy3rtz5VybA8Nq9g_PJUHsltCg7-GqeiUPpq9OcUlPnQaCgYKAUUSARMSFQGbdwaIVvuJM4mr6GzHhGeScB6wFA0237
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+#      - name: Uplaoding Proxy to APIGEE
+#        run: curl --silent -H "Authorization: Bearer ya29.a0AVvZVsoB7BGaU2SFyG5yqMzWdTNpEhTRefA7ddp2JtuxR-yFSS8CSby8LClW5b5gn1hDTRvVzQqJSiKhc52IV1M_D35I5cJ2Vl8pBCZQeJUS28mVQEAHOnti4y2f-dEr7-omBu5cSz_PVtudUUUsCnOvTB4Iq-qP6HNyDvRhO64UI0lIdgNaeIqs8PSy3rtz5VybA8Nq9g_PJUHsltCg7-GqeiUPpq9OcUlPnQaCgYKAUUSARMSFQGbdwaIVvuJM4mr6GzHhGeScB6wFA0237" -F file=@tespapi_BUNDLE -X POST "https://apigee.googleapis.com/v1/organizations/apigee-nonprod-366819/apis?action=import&name=tespapi"
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Deploying Proxy on APIGEE
+        run: curl --fail -H "Authorization: Bearer ya29.a0AVvZVsoB7BGaU2SFyG5yqMzWdTNpEhTRefA7ddp2JtuxR-yFSS8CSby8LClW5b5gn1hDTRvVzQqJSiKhc52IV1M_D35I5cJ2Vl8pBCZQeJUS28mVQEAHOnti4y2f-dEr7-omBu5cSz_PVtudUUUsCnOvTB4Iq-qP6HNyDvRhO64UI0lIdgNaeIqs8PSy3rtz5VybA8Nq9g_PJUHsltCg7-GqeiUPpq9OcUlPnQaCgYKAUUSARMSFQGbdwaIVvuJM4mr6GzHhGeScB6wFA0237" -X POST "https://apigee.googleapis.com/v1/organizations/apigee-nonprod-366819/environments/ecomm-middleware-dev/apis/tespapi/revisions/$REV/deployments?override=true"
+		
+      - name: Checking Deployment staus of Proxy on APIGEE
+        run: curl --fail -H "Authorization: Bearer ya29.a0AVvZVsoB7BGaU2SFyG5yqMzWdTNpEhTRefA7ddp2JtuxR-yFSS8CSby8LClW5b5gn1hDTRvVzQqJSiKhc52IV1M_D35I5cJ2Vl8pBCZQeJUS28mVQEAHOnti4y2f-dEr7-omBu5cSz_PVtudUUUsCnOvTB4Iq-qP6HNyDvRhO64UI0lIdgNaeIqs8PSy3rtz5VybA8Nq9g_PJUHsltCg7-GqeiUPpq9OcUlPnQaCgYKAUUSARMSFQGbdwaIVvuJM4mr6GzHhGeScB6wFA0237" -X POST "https://apigee.googleapis.com/v1/organizations/apigee-nonprod-366819/environments/ecomm-middleware-dev/apis/tespapi/revisions/$REV/deployments?override=true"
+		
+      - name: Checking Deployment staus of Proxy on APIGEE
+        echo -n "Checking Deployment Status"
+		STATUS=""
+		while [ "$STATE" != "READY" ]; do
+			STATE=$(curl --silent -H "Authorization: Bearer $(token)" "https://apigee.googleapis.com/v1/organizations/apigee-nonprod-366819/environments/ecomm-middleware-dev/apis/tespapi/revisions/$REV/deployments" | jq -r '.state')
+			echo -n "."
+			sleep 5
+		done
+		
+		echo -e "\nProxy tespapi is deployed.\n"
